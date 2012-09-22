@@ -1,0 +1,38 @@
+From dc9f462d42514f6038f4e512c1d0ad32bcdc4c74 Mon Sep 17 00:00:00 2001
+From: Joachim Schmitz <jojo@schmitz-digital.de>
+Date: Sat, 8 Sep 2012 19:01:31 +0200
+Subject: [PATCH 326/462] Document MKDIR_WO_TRAILING_SLASH in Makefile
+
+Signed-off-by: Joachim Schmitz <jojo@schmitz-digital.de>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+---
+ Makefile | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index 6b0c961..556bc9f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -90,6 +90,8 @@ all::
+ #
+ # Define NO_MKDTEMP if you don't have mkdtemp in the C library.
+ #
++# Define MKDIR_WO_TRAILING_SLASH if your mkdir() can't deal with trailing slash.
++#
+ # Define NO_MKSTEMPS if you don't have mkstemps in the C library.
+ #
+ # Define NO_STRTOK_R if you don't have strtok_r in the C library.
+@@ -1639,6 +1641,10 @@ ifdef NO_MKDTEMP
+ 	COMPAT_CFLAGS += -DNO_MKDTEMP
+ 	COMPAT_OBJS += compat/mkdtemp.o
+ endif
++ifdef MKDIR_WO_TRAILING_SLASH
++	COMPAT_CFLAGS += -DMKDIR_WO_TRAILING_SLASH
++	COMPAT_OBJS += compat/mkdir.o
++endif
+ ifdef NO_MKSTEMPS
+ 	COMPAT_CFLAGS += -DNO_MKSTEMPS
+ endif
+-- 
+1.7.12
+

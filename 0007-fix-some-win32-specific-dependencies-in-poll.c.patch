@@ -1,0 +1,43 @@
+From 98c573a902d47722b062579c5a9d9e661b4263e4 Mon Sep 17 00:00:00 2001
+From: Joachim Schmitz <jojo@schmitz-digital.de>
+Date: Mon, 17 Sep 2012 23:18:27 +0200
+Subject: [PATCH 435/462] fix some win32 specific dependencies in poll.c
+
+In order for non-win32 platforms to be able to use poll.c, #ifdef the
+inclusion of two header files properly
+
+Signed-off-by: Joachim Schmitz <jojo@schmitz-digital.de>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+---
+ compat/poll/poll.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/compat/poll/poll.c b/compat/poll/poll.c
+index 403eaa7..49541f1 100644
+--- a/compat/poll/poll.c
++++ b/compat/poll/poll.c
+@@ -24,7 +24,9 @@
+ # pragma GCC diagnostic ignored "-Wtype-limits"
+ #endif
+ 
+-#include <malloc.h>
++#if defined(WIN32)
++# include <malloc.h>
++#endif
+ 
+ #include <sys/types.h>
+ 
+@@ -48,7 +50,9 @@
+ #else
+ # include <sys/time.h>
+ # include <sys/socket.h>
+-# include <sys/select.h>
++# ifndef NO_SYS_SELECT_H
++#  include <sys/select.h>
++# endif
+ # include <unistd.h>
+ #endif
+ 
+-- 
+1.7.12
+
