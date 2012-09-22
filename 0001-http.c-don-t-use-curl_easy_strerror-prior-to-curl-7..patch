@@ -1,0 +1,36 @@
+From 4246b0bd900e72dbe83fd07cdfc946483a76214c Mon Sep 17 00:00:00 2001
+From: Joachim Schmitz <jojo@schmitz-digital.de>
+Date: Thu, 23 Aug 2012 09:33:55 +0200
+Subject: [PATCH 201/462] http.c: don't use curl_easy_strerror prior to
+ curl-7.12.0
+
+Reverts be22d92 (http: avoid empty error messages for some curl
+errors, 2011-09-05) on platforms with older versions of libcURL
+where the function is not available.
+
+Signed-off-by: Joachim Schmitz <jojo@schmitz-digital.de>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+---
+ http.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/http.c b/http.c
+index b61ac85..18bc6bf 100644
+--- a/http.c
++++ b/http.c
+@@ -806,10 +806,12 @@ static int http_request(const char *url, void *result, int target, int options)
+ 				ret = HTTP_REAUTH;
+ 			}
+ 		} else {
++#if LIBCURL_VERSION_NUM >= 0x070c00
+ 			if (!curl_errorstr[0])
+ 				strlcpy(curl_errorstr,
+ 					curl_easy_strerror(results.curl_result),
+ 					sizeof(curl_errorstr));
++#endif
+ 			ret = HTTP_ERROR;
+ 		}
+ 	} else {
+-- 
+1.7.12
+

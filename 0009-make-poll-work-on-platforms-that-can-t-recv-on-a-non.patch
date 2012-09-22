@@ -1,0 +1,32 @@
+From a6772946a554ad97ea4f6febbff3b98fbaa2f5bf Mon Sep 17 00:00:00 2001
+From: Joachim Schmitz <jojo@schmitz-digital.de>
+Date: Mon, 17 Sep 2012 23:24:42 +0200
+Subject: [PATCH 437/462] make poll() work on platforms that can't recv() on a
+ non-socket
+
+This way it just got added to gnulib too the other day.
+
+Signed-off-by: Joachim Schmitz <jojo@schmitz-digital.de>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+---
+ compat/poll/poll.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/compat/poll/poll.c b/compat/poll/poll.c
+index e4b8319..7d226ec 100644
+--- a/compat/poll/poll.c
++++ b/compat/poll/poll.c
+@@ -306,6 +306,10 @@ compute_revents (int fd, int sought, fd_set *rfds, fd_set *wfds, fd_set *efds)
+ 	       || socket_errno == ECONNABORTED || socket_errno == ENETRESET)
+ 	happened |= POLLHUP;
+ 
++      /* some systems can't use recv() on non-socket, including HP NonStop */
++      else if (/* (r == -1) && */ socket_errno == ENOTSOCK)
++	happened |= (POLLIN | POLLRDNORM) & sought;
++
+       else
+ 	happened |= POLLERR;
+     }
+-- 
+1.7.12
+
